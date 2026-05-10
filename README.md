@@ -1,8 +1,8 @@
 # Slay the Spire Bot Mod
 
-一个基于 **ModTheSpire + BaseMod** 的 `Slay the Spire` 自动爬塔模组原型，当前以 `Ironclad` 为唯一目标角色。
+一个基于 **ModTheSpire + BaseMod** 的《Slay the Spire》自动爬塔模组，以铁甲战士（Ironclad）为目标角色。
 
-这个项目的重点不是把整套流程“跑起来”而已，而是在流程稳定的前提下，持续提高 bot 的实际决策质量，包括：
+这个项目的重心不是让 bot "跑得通"——流程稳定性已经是前提。真正持续在做的事，是在流程稳定的前提下，不断提升 bot 的实际决策质量，包括：
 
 - 战斗出牌顺序
 - 战斗中药水使用
@@ -10,11 +10,11 @@
 - 地图与路径选择
 - 奖励、商店、篝火、事件等非战斗决策
 
-## 当前定位
+## 功能概览
 
-当前 bot 已经具备一条稳定的主流程：
+bot 已经具备一条稳定的主流程：
 
-- `capture -> decide -> execute -> validate/log`
+`capture → decide → execute → validate/log`
 
 已覆盖的主要界面：
 
@@ -27,222 +27,79 @@
 - 篝火
 - Boss relic 三选一
 
-交互热键：
+### 战斗决策
 
-- `F8`：启动 / 暂停 bot
-- `F9`：单步执行一次决策
+已支持基础战斗启发式与两回合浅层序列搜索，重点提升"本回合该先打什么"的质量。
 
-推荐优先使用 `F9` 做单步验证，再逐步切到连续运行。
+已实现的战斗药水支持：
 
-## 当前已完成的决策优化
+`Colorless Potion` · `Attack Potion` · `Skill Potion` · `Power Potion` · `Fear Potion` ·
+`Ancient Potion` · `Cultist Potion` · `Speed Potion` · `Duplication Potion`
 
-### 战斗
+已实现的战斗遗物联动：
 
-已支持基础战斗启发式与两回合浅层序列搜索，重点提升“本回合该先打什么”的质量。
+`Anchor` · `Horn Cleat` · `Champion Belt` · `Paper Frog` · `Ornamental Fan` ·
+`Kunai` · `Shuriken` · `Pen Nib` · `Nunchaku` · `Letter Opener` · `Ink Bottle` ·
+`Gremlin Horn` · `Akabeko`
 
-近期已补强的战斗决策包括：
-
-- 多类战斗药水：
-  - `Colorless Potion`
-  - `Attack Potion`
-  - `Skill Potion`
-  - `Power Potion`
-  - `Fear Potion`
-  - `Ancient Potion`
-  - `Cultist Potion`
-  - `Speed Potion`
-  - `Duplication Potion`
-- 已实现的战斗遗物联动：
-  - `Anchor`
-  - `Horn Cleat`
-  - `Champion Belt`
-  - `Paper Frog`
-  - `Ornamental Fan`
-  - `Kunai`
-  - `Shuriken`
-  - `Pen Nib`
-  - `Nunchaku`
-  - `Letter Opener`
-  - `Ink Bottle`
-  - `Gremlin Horn`
-  - `Akabeko`
-
-这些优化已经不再只是“识别到遗物”，而是会直接影响：
-
-- 出牌顺序
-- 进攻与防守的取舍
-- 补刀与续航节奏
-- setup 牌是否值得先打
+这些优化不只是"识别到遗物"，而是会直接影响出牌顺序、攻守取舍、补刀与续航节奏、以及 setup 牌是否值得先打。
 
 ### 地图与路径
 
-地图决策已经从简单的“看当前节点类型”提升到包含未来路径形状的启发式评估，当前会综合考虑：
+地图决策综合考虑：
 
 - 当前血量与生存风险
-- potions 与牌组质量
-- elite 意愿
-- shop / purge / upgrade 的潜在收益
-- 接近 boss 时的路线偏置
+- 药水与牌组质量
+- 精英怪意愿
+- 商店/删牌/升级的潜在收益
+- 接近 Boss 时的路线偏置
 
-已加入的路径级逻辑包括：
-
-- 连续 elite 惩罚
-- elite 后接 `REST` / `SHOP` 的奖励
-- 接近 boss 的危险链惩罚
-- `Slime Boss`、`Guardian` 等 boss-aware 路线偏置
+路径级逻辑包括连续精英惩罚、精英后接休息/商店的奖励、接近 Boss 的危险链惩罚，以及针对史莱姆 Boss、守护者等特定 Boss 的路线偏置。
 
 ### 奖励、商店、事件
 
-- 卡牌奖励已支持部分 boss-aware 选择偏置
-- 商店已支持 `relic / card / purge` 的基础权衡
-- 战后奖励已支持 relic、potion、gold、钥匙等基础排序
-- 特殊事件支持：
-  - `GremlinWheelGame`
-  - `GremlinMatchGame`
-- `Neow` 事件已加入定向规则，避免选择“前 3 场战斗敌人只有 1 HP”的低价值开局选项
-
-## 当前验证方式
-
-常用构建与回归命令：
-
-```powershell
-.\gradlew.bat offlineTest
-.\gradlew.bat check
-.\gradlew.bat jar
-```
-
-当前构建产物：
-
-- `build/libs/slay-the-spire-bot-0.1.0.jar`
-
-离线测试主要覆盖：
-
-- 决策引擎启发式
-- 战斗 relic / potion 联动
-- 地图路径评估
-- 特殊事件支持
-- 执行动作与状态适配
+- 卡牌奖励支持部分 Boss-aware 选择偏置
+- 商店支持遗物/卡牌/删牌的基础权衡
+- 战后奖励支持遗物、药水、金币、钥匙等基础排序
+- 特殊事件支持：转盘事件（GremlinWheelGame）、配对事件（GremlinMatchGame）
+- Neow 事件已加入定向规则，避免低价值开局选项
 
 ## 安装
 
-1. 构建输出 jar
-2. 将 jar 放入 `Slay the Spire/Mods/`
-3. 用 `ModTheSpire` 启动游戏并勾选本 Mod
+### 方式一：从 Release 获取（推荐）
 
-依赖 jar 请放入 `lib/`，通常至少包括：
+1. 从本仓库的 [Releases] 页面下载最新版本的 `slay-the-spire-bot-<版本号>.jar`
+2. 将 jar 放入 `Slay the Spire/Mods/` 目录
+3. 用 ModTheSpire 启动游戏，在模组列表中勾选本模组
 
-- `desktop-1.0.jar`
-- `ModTheSpire.jar`
-- `BaseMod.jar`
+### 方式二：从 Steam 创意工坊获取
 
-如果环境变量 `STS_MODS_DIR` 已指向游戏 `Mods` 目录，也可以执行：
+如果本模组已上架 Steam 创意工坊，直接在《Slay the Spire》的创意工坊中搜索订阅即可。ModTheSpire 和 BaseMod 也会自动作为依赖安装。
 
-```powershell
-.\gradlew.bat copyToMods
-```
+### 前置依赖
 
-当前仓库默认测试部署目录为：
+- ModTheSpire（模组加载器）
+- BaseMod（基础模组框架）
 
-- `D:\SteamLibrary\steamapps\workshop\content\646570\3701751907`
+首次使用 ModTheSpire 请确保以上两个依赖也已就位。
 
-## 调试与日志
+## 交互热键
+
+- **F8**：启动 / 暂停 bot
+- **F9**：单步执行一次决策
+
+推荐优先使用 **F9** 做单步观察，确认决策符合预期后再切换为连续运行。
+
+## 日志与排查
 
 - 日志默认写入游戏工作目录下的 `logs/sts-bot/`
-- 推荐优先使用 `F9` 单步调试，而不是直接长时间 `F8`
-- 排查卡住问题时重点查看：
+- 如果 bot 出现卡住，推荐用 F9 单步执行来观察，比长时间 F8 连续运行更便于定位问题
+- 排查卡住时，日志中重点关注：
   - `ACTION`
   - `WARN`
   - `ERROR`
-
-建议重点关注这些字段：
-
-- `result=...`
-- `post=...`
-- `State did not change after action`
-- `Bot auto-paused after repeated identical state/action loops`
-
-## 更高效的本地测试
-
-推荐直接使用一键测试脚本：
-
-```powershell
-.\scripts\dev-test.ps1
-```
-
-它会自动：
-
-- 构建最新 jar
-- 部署到当前实际 mod 安装目录
-- 清理该目录下本 mod 的旧 jar，避免误测旧版本
-
-常用参数：
-
-```powershell
-.\scripts\dev-test.ps1 -WhatIf
-.\scripts\dev-test.ps1 -ShowLatestLog -LogDir '你的logs/sts-bot目录'
-.\scripts\dev-test.ps1 -LaunchGame -GameExecutable '你的游戏或启动器路径'
-```
-
-说明：
-
-- `STS_MODS_DIR` 可覆盖默认部署目录
-- `STS_GAME_EXE` 可提供默认游戏启动路径
-- `STS_BOT_LOG_DIR` 可提供默认日志目录
-
-## 下一步优化计划
-
-下一阶段仍然以“增量提高胜率”为目标，不做大重写，继续沿用：
-
-- 小步迭代
-- 离线测试先行
-- 实机回归补验证
-
-### 1. 继续补强战斗遗物联动
-
-优先继续扩展会明显改变出牌顺序的 relic，重点是：
-
-- 能改变本回合生存线的 relic
-- 能改变补刀与续航节奏的 relic
-- 能改变 setup 与爆发顺序的 relic
-
-实现原则：
-
-- 只增加必要的快照状态字段
-- 不引入泛化的大型 relic 状态系统
-- 每加一类 relic，都同步补离线测试
-
-### 2. 提升篝火与长期价值判断
-
-当前篝火决策还比较粗，下一步重点补：
-
-- `REST` vs `SMITH` 的更细粒度权衡
-- boss、当前血量、牌组成长性之间的联动
-- 对高价值升级窗口的识别
-
-### 3. 继续细化奖励与商店决策
-
-重点补强：
-
-- boss-aware 卡牌奖励的继续微调
-- 商店中 `relic / purge / card` 的更精细排序
-- 大牌组、中后期低质量买牌倾向的进一步压制
-
-### 4. 扩展事件支持
-
-继续把“不适合走通用按钮逻辑”的事件逐步纳入 `SpecialEventSupport`，减少复杂事件中的误判和卡住。
-
-### 5. 做更多实机回归
-
-在离线测试通过的前提下，继续按 `docs/regression-checklist.md` 做实机回归，重点关注：
-
-- 地图切换
-- 事件
-- 商店
-- 奖励
-- 篝火
-- 跨层与跨局状态
+  - `State did not change after action` 等异常标记
 
 ## 项目状态
 
-这个项目目前仍然是一个持续迭代中的 bot 模组，不是“通关级成品 AI”。  
-当前阶段最重要的工作不是扩大功能面，而是把已有流程上的每一个关键决策逐步做对。
+这个项目目前仍然是一个持续迭代中的 bot 模组，不是"通关级成品 AI"。当前阶段最重要的工作不是扩大功能面，而是把已有流程上的每一个关键决策逐步做对。
